@@ -1,5 +1,5 @@
 
-# aman_s_application9
+# CS125 Final
 ### Table of contents
 - [System requirements](#system-requirements)
 - [Figma design guidelines for better UI accuracy](#figma-design-guideline-for-better-accuracy)
