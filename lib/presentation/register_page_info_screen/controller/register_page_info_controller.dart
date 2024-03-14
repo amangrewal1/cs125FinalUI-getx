@@ -35,4 +35,5 @@ class RegisterPageInfoController extends GetxController {
     }
     registerPageInfoModelObj.value.dropdownItemList.refresh();
   }
+  
 }

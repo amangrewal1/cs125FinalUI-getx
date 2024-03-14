@@ -118,8 +118,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
                                   padding:
                                       EdgeInsets.only(left: 20.h, right: 40.h),
                                   child: Row(
-                                      children: [_buildShare(), _buildFT()]))
-                            ])))),
+                                      children: [Expanded(child: _buildShare(), ), _buildFT(),]))])))),
             bottomNavigationBar: _buildNext()));
   }
 
@@ -168,22 +167,23 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
         buttonTextStyle: theme.textTheme.labelLarge!);
   }
 
-  /// Section Widget
-  Widget _buildShare() {
-    return Expanded(
-        child: CustomTextFormField(
-            controller: controller.shareController,
-            hintText: "lbl_your_height".tr,
-            textInputAction: TextInputAction.done,
-            prefix: Container(
-                margin: EdgeInsets.fromLTRB(15.h, 15.v, 10.h, 15.v),
-                child: CustomImageView(
-                    imagePath: ImageConstant.imgShare,
-                    height: 18.adaptSize,
-                    width: 18.adaptSize)),
-            prefixConstraints: BoxConstraints(maxHeight: 48.v)));
-  }
-
+ Widget _buildShare() {
+  return Padding(
+      padding: EdgeInsets.only(left: 20.h, right: 40.h),
+      child: CustomDropDown(
+          icon: Container(
+              margin: EdgeInsets.fromLTRB(30.h, 15.v, 15.h, 15.v),
+              child: CustomImageView(
+                  imagePath: ImageConstant.imgArrowdown,
+                  height: 18.adaptSize,
+                  width: 18.adaptSize)),
+          hintText: "lbl_your_height".tr, // Make sure you have a corresponding label in your translations
+          items: controller.registerPageInfoModelObj.value.heightOptions.value,
+          onChanged: (value) {
+            // You may want to handle the selected height value here
+            // This could be simply storing the selected value in a variable, or something else depending on your application's needs
+          }));
+}
   /// Section Widget
   Widget _buildFT() {
     return CustomElevatedButton(

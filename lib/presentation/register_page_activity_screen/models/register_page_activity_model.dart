@@ -7,16 +7,16 @@ class RegisterPageActivityModel {
   Rx<List<SelectionPopupModel>> dropdownItemList = Rx([
     SelectionPopupModel(
       id: 1,
-      title: "Item One",
+      title: "1-2x a week",
       isSelected: true,
     ),
     SelectionPopupModel(
       id: 2,
-      title: "Item Two",
+      title: "3-4x a week",
     ),
     SelectionPopupModel(
       id: 3,
-      title: "Item Three",
+      title: "5-6x a week",
     )
   ]);
 }

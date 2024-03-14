@@ -7,20 +7,23 @@ class RegisterPageInfoModel {
   Rx<List<SelectionPopupModel>> dropdownItemList = Rx([
     SelectionPopupModel(
       id: 1,
-      title: "Item One",
+      title: "Male",
       isSelected: true,
     ),
     SelectionPopupModel(
       id: 2,
-      title: "Item Two",
-    ),
-    SelectionPopupModel(
-      id: 3,
-      title: "Item Three",
+      title: "Female",
     )
   ]);
 
   Rx<DateTime>? selectedDateOfBirth = Rx(DateTime.now());
 
   Rx<String> dateOfBirth = Rx("Date of Birth");
+  
+  Rx<List<SelectionPopupModel>> heightOptions = Rx(List.generate(37, (index) {
+        final feet = 4 + (index / 12).floor();
+        final inch = index % 12;
+        return SelectionPopupModel(id: index, title: "$feet'$inch\"", isSelected: index == 0);
+      })); 
 }
+

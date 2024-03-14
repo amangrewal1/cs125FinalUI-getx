@@ -8,4 +8,6 @@ import '../models/register_page_sleep_goal_model.dart';
 class RegisterPageSleepGoalController extends GetxController {
   Rx<RegisterPageSleepGoalModel> registerPageSleepGoalModelObj =
       RegisterPageSleepGoalModel().obs;
+      var sleepGoalOptions = <String>["10 Hours", "9 Hours", "8 Hours", "7 Hours", "6 Hours"].obs; 
+      var selectedSleepGoal = "8 Hours".obs; // Default value
 }

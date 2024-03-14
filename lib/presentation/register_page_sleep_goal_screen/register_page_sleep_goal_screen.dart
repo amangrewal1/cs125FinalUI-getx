@@ -32,36 +32,34 @@ class RegisterPageSleepGoalScreen
             bottomNavigationBar: _buildConfirm()));
   }
 
-  /// Section Widget
   Widget _buildTwentyTwo() {
-    return Container(
+    return Obx(() => Container(
         margin: EdgeInsets.only(left: 2.h),
-        padding: EdgeInsets.all(9.h),
-        decoration: AppDecoration.fillGray
-            .copyWith(borderRadius: BorderRadiusStyle.roundedBorder14),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Padding(
-              padding: EdgeInsets.only(top: 1.v),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("lbl_z".tr, style: theme.textTheme.bodySmall),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child:
-                            Text("lbl_z".tr, style: theme.textTheme.bodySmall))
-                  ])),
-          Padding(
-              padding: EdgeInsets.only(left: 21.h, top: 6.v, bottom: 4.v),
-              child: Text("lbl_sleep_goal".tr,
-                  style: CustomTextStyles.bodySmallGray500_1)),
-          Spacer(),
-          CustomImageView(
+        padding: EdgeInsets.symmetric(vertical: 9.h, horizontal: 9.h),
+        decoration: AppDecoration.fillGray.copyWith(borderRadius: BorderRadiusStyle.roundedBorder14),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: controller.selectedSleepGoal.value, // GetX reactive state
+            icon: CustomImageView(
               imagePath: ImageConstant.imgArrowdown,
               height: 18.adaptSize,
               width: 18.adaptSize,
-              margin: EdgeInsets.only(top: 5.v, right: 6.h, bottom: 5.v))
-        ]));
+            ),
+            onChanged: (newValue) {
+              if (newValue != null) { // Check for null
+                controller.selectedSleepGoal.value = newValue;
+              }
+            },
+            items: controller.sleepGoalOptions.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: CustomTextStyles.bodySmallGray500_1),
+              );
+            }).toList(),
+            style: theme.textTheme.bodySmall,
+            // Apply additional styling if needed to match your design
+          ),
+        )));
   }
 
   /// Section Widget
