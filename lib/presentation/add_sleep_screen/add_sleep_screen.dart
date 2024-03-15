@@ -30,22 +30,25 @@ class AddSleepScreen extends GetWidget<AddSleepController> {
     String dateString = _generateDateString(date);
     // Print out the data just before saving
     print('Data to be saved: {date: $dateString, bedtime: $bedtime, hoursOfSleep: $hoursOfSleep, stressLevel: $stressLevel}');
-    // Retrieve existing data or initialize an empty map
-    Map<String, dynamic> data = prefs.getString(dateString) != null
-        ? json.decode(prefs.getString(dateString)!) // Use json.decode
+    // Retrieve existing sleep data or initialize an empty map
+    Map<String, dynamic> sleepData = prefs.getString('sleepData') != null
+        ? json.decode(prefs.getString('sleepData')!)
         : {};
-    // Update data with new values
-    data['bedtime'] = bedtime;
-    data['hoursOfSleep'] = hoursOfSleep;
-    data['stress'] = stressLevel;
+
+    // Update data with new values for the current date
+    sleepData[dateString] = {
+      'bedtime': bedtime,
+      'hoursOfSleep': hoursOfSleep,
+      'stressLevel': stressLevel,
+    };
     // Save updated data to local storage
-    await prefs.setString(dateString, json.encode(data));
+    await prefs.setString('sleepData', json.encode(sleepData));
   }
 
-  // Call this function whenever you want to save data
+  // Call this function whenever we want to save data
   // For example, after setting bedtime, hours of sleep, or stress level
   void saveData() {
-    // Assuming you have access to these values
+    // Assuming we have access to these values
     DateTime now = DateTime.now();
     String bedtime = controller.bedtime.value;
     String hoursOfSleep = controller.hoursOfSleep.value;
@@ -65,14 +68,11 @@ class AddSleepScreen extends GetWidget<AddSleepController> {
   Future<Map<String, dynamic>?> getDataFromLocal(DateTime date) async {  //debugging
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String dateString = _generateDateString(date);
-    String? jsonData = prefs.getString(dateString);
-    // Print out the retrieved JSON data
-    print('Retrieved JSON data: $jsonData');
-    if (jsonData != null) {
-      return json.decode(jsonData);
-    } else {
-      return null;
-    }
+    // Retrieve sleep data
+    Map<String, dynamic>? sleepData =
+        prefs.getString('sleepData') != null ? json.decode(prefs.getString('sleepData')!) : null;
+    // Return data for the specified date
+    return sleepData != null ? sleepData[dateString] : null;
   }
 
   Future<void> printSharedPreferencesContents() async { //debugging
@@ -83,11 +83,6 @@ class AddSleepScreen extends GetWidget<AddSleepController> {
       dynamic value = prefs.get(key);
       print('Key: $key, Value: $value');
     });
-  }
-
-  Future<void> clearSharedPreferences() async { //debugging
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
   }
 
   @override

@@ -3,6 +3,9 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:aman_s_application9/core/app_export.dart';
 import 'controller/home_controller.dart';
+//data retrieval
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 // ignore_for_file: must_be_immutable
 class HomeScreen extends GetWidget<HomeController> {
@@ -35,9 +38,21 @@ class HomeScreen extends GetWidget<HomeController> {
                 SizedBox(height: 6.v),
                 Padding(
                   padding: EdgeInsets.only(left: 2.h),
-                  child: Text(
-                    "lbl_stefani_wong".tr,
-                    style: theme.textTheme.titleLarge,
+                  child: FutureBuilder<String?>(
+                    future: _getUserData(), // Call the function to get user data
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          "${snapshot.data}!", // Use the retrieved name
+                          style: theme.textTheme.titleLarge,
+                        );
+                      } else {
+                        return Text(
+                          "lbl_stefani_wong".tr, // Default text if name not available
+                          style: theme.textTheme.titleLarge,
+                        );
+                      }
+                    },
                   ),
                 ),
                 SizedBox(height: 29.v),
@@ -60,6 +75,18 @@ class HomeScreen extends GetWidget<HomeController> {
         bottomNavigationBar: _buildBottomBar(),
       ),
     );
+  }
+
+  // Function to retrieve user data from SharedPreferences
+  Future<String?> _getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataString = prefs.getString('userData');
+    if (userDataString != null) {
+      Map<String, dynamic> userData = json.decode(userDataString);
+      return userData['name']; // Retrieve the value associated with the 'name' key
+    } else {
+      return null; // Return null if 'userData' is not found in SharedPreferences
+    }
   }
 
   /// Section Widget

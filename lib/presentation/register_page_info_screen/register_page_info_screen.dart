@@ -5,12 +5,66 @@ import 'package:aman_s_application9/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:aman_s_application9/core/app_export.dart';
 import 'controller/register_page_info_controller.dart';
+//for saving to local
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 // ignore_for_file: must_be_immutable
 class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
   RegisterPageInfoScreen({Key? key}) : super(key: key);
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String _generateDateString(DateTime date) {
+    // Format the date string in a consistent format
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+   // Function to save data to local storage
+  Future<void> saveDataToLocal({
+    required String name,
+    required String gender,
+    required String dob,
+    required String weight,
+    required String height,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Retrieve existing data or initialize an empty map
+    Map<String, dynamic> data = prefs.getString('userData') != null
+        ? json.decode(prefs.getString('userData')!) // Use json.decode
+        : {};
+    // Update data with new values
+    data['name'] = name;
+    data['gender'] = gender;
+    data['dob'] = dob;
+    data['weight'] = weight;
+    data['height'] = height;
+    // Save updated data to local storage
+    await prefs.setString('userData', json.encode(data));
+  }
+
+  // Call this function whenever we want to save data
+  // For example, after setting bedtime, hours of sleep, or stress level
+  void saveData() {
+    // Assuming we have access to these values
+    String name = controller.name.value;
+    String gender = controller.gender.value;
+    String dob = _generateDateString(controller.registerPageInfoModelObj.value.selectedDateOfBirth!.value);
+    String weight = controller.weight.value;
+    String height = controller.height.value;
+
+    print('Data to be saved: {name: $name, gender: $gender, DOB: $dob, weight: $weight, height: $height}');
+
+    // Save data to local storage
+    saveDataToLocal(
+      name: name,
+      gender: gender,
+      dob: dob,
+      weight: weight,
+      height: height,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +111,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
                                               width: 18.adaptSize)),
                                       hintText: "lbl_choose_gender".tr,
                                       items: controller.registerPageInfoModelObj
-                                          .value.dropdownItemList!.value,
+                                          .value.dropdownItemList.value,
                                       prefix: Container(
                                           margin: EdgeInsets.fromLTRB(
                                               15.h, 15.v, 10.h, 15.v),
@@ -117,7 +171,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
                               Padding(
                                   padding:
                                       EdgeInsets.only(left: 20.h, right: 40.h),
-                                  child: Row(
+                                  child: Row( 
                                       children: [Expanded(child: _buildShare(), ), _buildFT(),]))])))),
             bottomNavigationBar: _buildNext()));
   }
@@ -141,7 +195,11 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
                 return "err_msg_please_enter_valid_text".tr;
               }
               return null;
-            }));
+            },
+            onChanged: (value) {
+              controller.setName(value);
+            },
+            ));
   }
 
   /// Section Widget
@@ -151,7 +209,10 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
             controller: controller.yourWeightController,
             hintText: "lbl_your_weight".tr,
             contentPadding:
-                EdgeInsets.symmetric(horizontal: 30.h, vertical: 15.v)));
+                EdgeInsets.symmetric(horizontal: 30.h, vertical: 15.v),
+            onChanged: (value) {
+              controller.setWeight(value);
+            },));
   }
 
   /// Section Widget
@@ -180,8 +241,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
           hintText: "lbl_your_height".tr, // Make sure you have a corresponding label in your translations
           items: controller.registerPageInfoModelObj.value.heightOptions.value,
           onChanged: (value) {
-            // You may want to handle the selected height value here
-            // This could be simply storing the selected value in a variable, or something else depending on your application's needs
+            controller.setHeight(value);
           }));
 }
   /// Section Widget
@@ -211,6 +271,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
         buttonStyle: CustomButtonStyles.none,
         decoration: CustomButtonStyles.gradientPrimaryToBlueDecoration,
         onPressed: () {
+          saveData();
           navigateToActivity();
         });
   }

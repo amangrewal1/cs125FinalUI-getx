@@ -2,6 +2,8 @@ import 'package:aman_s_application9/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:aman_s_application9/core/app_export.dart';
 import 'controller/success_registration_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class SuccessRegistrationScreen
     extends GetWidget<SuccessRegistrationController> {
@@ -20,8 +22,21 @@ class SuccessRegistrationScreen
                       height: 304.v,
                       width: 277.h),
                   SizedBox(height: 44.v),
-                  Text("msg_welcome_stefani".tr,
-                      style: theme.textTheme.titleLarge),
+                  FutureBuilder<String?>(
+                    future: _getUserData(), // Retrieve user's name asynchronously
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show loading indicator while waiting for data
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                      return Text(
+                        "Welcome ${snapshot.data}!", // Use user's name in the welcome message
+                        style: theme.textTheme.titleLarge,
+                      );
+                    },
+                  ),
                   SizedBox(height: 5.v),
                   Container(
                       width: 210.h,
@@ -35,6 +50,18 @@ class SuccessRegistrationScreen
                   SizedBox(height: 5.v)
                 ])),
             bottomNavigationBar: _buildGoToHome()));
+  }
+
+  Future<String?> _getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataString = prefs.getString('userData');
+    if (userDataString != null) {
+      Map<String, dynamic> userData = json.decode(userDataString);
+      return userData['name']; // Retrieve the value associated with the 'name' key
+    } else {
+      print("caillou");
+      return null; // Return null if 'UserData' is not found in SharedPreferences
+    }
   }
 
   /// Section Widget

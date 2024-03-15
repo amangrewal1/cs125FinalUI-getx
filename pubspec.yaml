@@ -21,6 +21,7 @@ flutter:
   assets: 
     - assets/
     - assets/images/
+    - assets/random_forest_model.joblib
   fonts: 
     - family: Poppins
       fonts: 
