@@ -200,7 +200,7 @@ Widget build(BuildContext context) {
               controller: stressLevelController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Enter stress level',
+                hintText: 'Enter stress level (1-5)',
               ),
               onSubmitted: (String value) {
                 // Assign the entered value to a local variable
