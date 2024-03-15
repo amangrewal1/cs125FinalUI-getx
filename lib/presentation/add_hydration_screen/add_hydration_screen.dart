@@ -4,6 +4,7 @@ import 'package:aman_s_application9/widgets/app_bar/appbar_title.dart';
 import 'package:aman_s_application9/widgets/app_bar/appbar_trailing_iconbutton_one.dart';
 import 'package:aman_s_application9/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:aman_s_application9/core/app_export.dart';
 import 'controller/add_hydration_controller.dart';
 
@@ -47,33 +48,37 @@ class AddHydrationScreen extends GetWidget<AddHydrationController> {
 
   /// Section Widget
   Widget _buildMonthCard() {
-    return Container(
-        margin: EdgeInsets.only(left: 37.h, right: 23.h),
-        padding: EdgeInsets.symmetric(horizontal: 8.h, vertical: 14.v),
-        decoration: AppDecoration.fillGray
-            .copyWith(borderRadius: BorderRadiusStyle.roundedBorder17),
-        child: Row(mainAxisSize: MainAxisSize.max, children: [
-          CustomImageView(
+    return Padding(
+      padding: EdgeInsets.only(left: 37.h, right: 23.h),
+      child: TextFormField(
+        controller: controller.addHydrationModelObj.value.waterIntakeController, // Define this TextEditingController in your model
+        keyboardType: TextInputType.number, // Ensures only numbers can be entered
+        decoration: InputDecoration(
+          labelText: 'Enter water intake in oz', // Replace with your field hint/label
+          prefixIcon: Padding(
+            padding: EdgeInsets.only(top: 2.v), // Adjust padding as needed
+            child: CustomImageView(
               imagePath: ImageConstant.imgCalendarBlueGray100,
               height: 17.v,
               width: 13.h,
-              margin: EdgeInsets.only(top: 2.v)),
-          Padding(
-              padding: EdgeInsets.only(left: 15.h, top: 1.v),
-              child: Text("msg_add_water_intake".tr,
-                  style: theme.textTheme.bodySmall)),
-          Spacer(),
-          Padding(
-              padding: EdgeInsets.only(top: 2.v),
-              child: Text("lbl_8_oz".tr,
-                  style: CustomTextStyles.bodySmallGray500)),
-          CustomImageView(
-              imagePath: ImageConstant.imgArrowRightGray50018x18,
-              height: 18.adaptSize,
-              width: 18.adaptSize,
-              margin: EdgeInsets.only(left: 5.h, top: 2.v, right: 37.h))
-        ]));
+            ),
+          ),
+          suffixText: 'oz', // If you want to show a suffix for the unit
+          contentPadding: EdgeInsets.symmetric(horizontal: 8.h, vertical: 14.v),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(17.h), // Adjust for your desired border radius
+          ),
+          // Add any other styling to match your design
+        ),
+        style: theme.textTheme.bodySmall, // Style the text field text
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly, // Allows only digits to be entered
+        ],
+        // Add any other text field properties you need
+      ),
+    );
   }
+
 
   /// Section Widget
   Widget _buildAdd() {

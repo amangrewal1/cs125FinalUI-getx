@@ -7,4 +7,10 @@ import '../models/add_hydration_model.dart';
 /// current addHydrationModelObj
 class AddHydrationController extends GetxController {
   Rx<AddHydrationModel> addHydrationModelObj = AddHydrationModel().obs;
+  // Inside AddHydrationController class
+  @override
+  void onClose() {
+    addHydrationModelObj.value.waterIntakeController.dispose();
+    super.onClose();
+  }
 }
