@@ -12,6 +12,9 @@ class AddSleepController extends GetxController {
   late RxString hoursOfSleep;
   late RxString stressLevel;
 
+  Rx<DateTime> selectedDate = Rx(DateTime.now());
+  Rx<String> selectedDateString = Rx("");
+
   @override
   void onInit() {
     bedtime = ''.obs;

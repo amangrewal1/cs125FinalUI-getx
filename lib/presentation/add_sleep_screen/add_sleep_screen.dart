@@ -49,7 +49,7 @@ class AddSleepScreen extends GetWidget<AddSleepController> {
   // For example, after setting bedtime, hours of sleep, or stress level
   void saveData() {
     // Assuming we have access to these values
-    DateTime now = DateTime.now();
+    DateTime now = controller.selectedDate.value; //DateTime.now();
     String bedtime = controller.bedtime.value;
     String hoursOfSleep = controller.hoursOfSleep.value;
     String stressLevel = controller.stressLevel.value;
@@ -96,6 +96,36 @@ Widget build(BuildContext context) {
         padding: EdgeInsets.symmetric(horizontal: 28.h, vertical: 18.v),
         child: Column(
           children: [
+            GestureDetector(
+              onTap: () {
+                onTapLabel();
+              },
+              child: Container(
+                  margin: EdgeInsets.only(
+                      left: 20.h, right: 40.h),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 15.h, vertical: 14.v),
+                  decoration: AppDecoration.fillGray
+                      .copyWith(
+                          borderRadius: BorderRadiusStyle
+                              .roundedBorder14),
+                  child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        CustomImageView(
+                            imagePath:
+                                ImageConstant.imgCalendar,
+                            height: 18.adaptSize,
+                            width: 18.adaptSize),
+                        Padding(
+                            padding:
+                                EdgeInsets.only(left: 10.h),
+                            child: Obx(() => Text(
+                                controller.selectedDateString.value,
+                                style: CustomTextStyles
+                                    .bodySmallGray500_1)))
+                      ]))),
+            SizedBox(height: 14.v),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.h),
               child: _buildHoursOfSleepCard(
@@ -175,6 +205,19 @@ Widget build(BuildContext context) {
               imagePath: ImageConstant.imgDetailNavs,
               margin: EdgeInsets.symmetric(horizontal: 30.h, vertical: 12.v))
         ]);
+  }
+
+  Future<void> onTapLabel() async {
+    DateTime? dateTime = await showDatePicker(
+        context: Get.context!,
+        initialDate: controller.selectedDate.value,
+        firstDate: DateTime(1970),
+        lastDate: DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    if (dateTime != null) {
+      controller.selectedDate.value = dateTime;
+      controller.selectedDateString.value = dateTime.format(pattern: dateTimeFormatPattern);
+    }
   }
 
   /// Section Widget

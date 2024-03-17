@@ -27,7 +27,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
     required String gender,
     required String dob,
     required String weight,
-    required String height,
+    required String height, 
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Retrieve existing data or initialize an empty map

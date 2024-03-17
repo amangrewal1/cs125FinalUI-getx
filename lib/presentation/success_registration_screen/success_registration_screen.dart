@@ -59,7 +59,6 @@ class SuccessRegistrationScreen
       Map<String, dynamic> userData = json.decode(userDataString);
       return userData['name']; // Retrieve the value associated with the 'name' key
     } else {
-      print("caillou");
       return null; // Return null if 'UserData' is not found in SharedPreferences
     }
   }

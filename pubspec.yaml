@@ -13,6 +13,8 @@ dependencies:
   flutter_svg: ^2.0.9
   flutter_svg_provider: ^1.0.7
   intl: ^0.18.0
+  tflite_flutter: ^0.10.4
+  time_machine: ^0.9.17
 dev_dependencies: 
   flutter_test: 
     sdk: flutter
@@ -21,7 +23,7 @@ flutter:
   assets: 
     - assets/
     - assets/images/
-    - assets/random_forest_model.joblib
+    - assets/keras_sleep_model.tflite
   fonts: 
     - family: Poppins
       fonts: 
