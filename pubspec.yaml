@@ -15,6 +15,7 @@ dependencies:
   intl: ^0.18.0
   tflite_flutter: ^0.10.4
   time_machine: ^0.9.17
+  health: ^9.0.1
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

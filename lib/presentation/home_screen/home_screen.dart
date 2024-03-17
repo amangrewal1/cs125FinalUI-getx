@@ -34,7 +34,7 @@ class HomeScreen extends GetWidget<HomeController> {
     int totalStress = 0;
 
     if (!sleepData.containsKey(currentDateString) && !sleepData.containsKey(previousDayString)) {
-      return 3;
+      return 0;
     }
 
     // Check if current date exists as a key in sleepData and add its stress level to totalStress if it does
@@ -121,6 +121,9 @@ class HomeScreen extends GetWidget<HomeController> {
     if (sleepDataString != null) {
       sleepData = json.decode(sleepDataString);
     }
+    else {
+      return 0;
+    }
     if (recsString != null) {
       recs = json.decode(recsString);
     }
@@ -160,6 +163,9 @@ class HomeScreen extends GetWidget<HomeController> {
     String? recsString = prefs.getString('recs');
     if (sleepDataString != null) {
       sleepData = json.decode(sleepDataString);
+    }
+    else {
+      return 500;
     }
     if (recsString != null) {
       recs = json.decode(recsString);
@@ -203,6 +209,9 @@ class HomeScreen extends GetWidget<HomeController> {
     String? sleepDataString = prefs.getString('sleepData');
     if (sleepDataString != null) {
       sleepData = json.decode(sleepDataString);
+    }
+    else {
+      return 250;
     }
     DateTime currentDate = DateTime.now();
     double score = 0;
