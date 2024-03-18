@@ -410,7 +410,7 @@ Future<int> fetchStepCount() async {
       msg = "You have a subpar score";
     }
     else {
-      msg = "You have a very low score";
+      msg = "You have a bad score";
     }
     return msg;
   }
