@@ -7,9 +7,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aman_s_application9/core/app_export.dart';
 import 'controller/add_hydration_controller.dart';
+//for saving to local
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class AddHydrationScreen extends GetWidget<AddHydrationController> {
   const AddHydrationScreen({Key? key}) : super(key: key);
+
+  String _generateDateString(DateTime date) {
+    // Format the date string in a consistent format
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  // Function to save data to local storage
+  Future<void> saveDataToLocal({
+    required String amount_drank
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Retrieve existing data or initialize an empty map
+    Map<String, dynamic> data = prefs.getString('hydration') != null
+        ? json.decode(prefs.getString('hydration')!) // Use json.decode
+        : {};
+    // Update data with new values
+    DateTime now = DateTime.now();
+    String date = _generateDateString(now);
+    if(!data.containsKey(date))
+      {
+        data[date] = [];
+      }
+      data[date].add([now.hour, int.tryParse(amount_drank) ?? 0]);
+    print('Data to be saved: {\'hydration\':{\'$date\':[${now.hour}, $amount_drank]}}');
+    print(data);
+
+    // Save updated data to local storage
+    await prefs.setString('hydration', json.encode(data));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +108,10 @@ class AddHydrationScreen extends GetWidget<AddHydrationController> {
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly, // Allows only digits to be entered
         ],
+        onChanged: (value) {
+          //Obtain the text
+          controller.addHydration(value);
+        },
         // Add any other text field properties you need
       ),
     );
@@ -88,8 +126,16 @@ class AddHydrationScreen extends GetWidget<AddHydrationController> {
         buttonStyle: CustomButtonStyles.none,
         decoration: CustomButtonStyles.gradientPrimaryToBlueDecoration,
         onPressed: () {
-          naviToHome();
-        });
+          if(controller.waterIntake.value.isNotEmpty) {
+            saveDataToLocal(amount_drank: controller.waterIntake.value);
+            naviToHome();
+          }
+          else
+            {
+              //Must enter a value
+              print('User must enter a value');
+            }
+        },);
   }
 
   /// Navigates to the previous screen.

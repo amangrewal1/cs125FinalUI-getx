@@ -27,7 +27,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
     required String gender,
     required String dob,
     required String weight,
-    required String height, 
+    required String height,
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Retrieve existing data or initialize an empty map
@@ -40,6 +40,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
     data['dob'] = dob;
     data['weight'] = weight;
     data['height'] = height;
+    data['firstLogin'] = _generateDateString(DateTime.now());
     // Save updated data to local storage
     await prefs.setString('userData', json.encode(data));
   }
@@ -230,8 +231,10 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
 
  Widget _buildShare() {
   return Padding(
-      padding: EdgeInsets.only(left: 20.h, right: 40.h),
+      padding: EdgeInsets.only(left: 0.h, right: 0.h),
       child: CustomDropDown(
+          contentPadding:
+          EdgeInsets.symmetric(horizontal: 30.h, vertical: 15.v),
           icon: Container(
               margin: EdgeInsets.fromLTRB(30.h, 15.v, 15.h, 15.v),
               child: CustomImageView(
@@ -300,7 +303,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
   /// Navigates to the registerPageActivityScreen when the action is triggered.
   navigateToActivity() {
     Get.offNamed(
-      AppRoutes.registerPageActivityScreen,
+      AppRoutes.registerPageSleepGoalScreen,
     );
   }
 }

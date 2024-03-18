@@ -1,5 +1,7 @@
 import '../../../core/app_export.dart';
 import '../models/register_page_sleep_goal_model.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// A controller class for the RegisterPageSleepGoalScreen.
 ///
@@ -8,6 +10,11 @@ import '../models/register_page_sleep_goal_model.dart';
 class RegisterPageSleepGoalController extends GetxController {
   Rx<RegisterPageSleepGoalModel> registerPageSleepGoalModelObj =
       RegisterPageSleepGoalModel().obs;
-      var sleepGoalOptions = <String>["10 Hours", "9 Hours", "8 Hours", "7 Hours", "6 Hours"].obs; 
-      var selectedSleepGoal = "8 Hours".obs; // Default value
+      var bedtime = 'Select a time'.obs;
+
+  TimeOfDay selectedopenTimePickerDialogTime = TimeOfDay.now();
+}
+String _generateDateString(DateTime date) {
+  // Format the date string in a consistent format
+  return DateFormat('yyyy-MM-dd').format(date);
 }

@@ -19,7 +19,7 @@ class WelcomeScreenOneScreen extends GetWidget<WelcomeScreenOneController> {
                     children: [
                       Spacer(),
                       Align(
-                          alignment: Alignment.centerRight,
+                          alignment: Alignment.center,
                           child: RichText(
                               text: TextSpan(children: [
                                 TextSpan(

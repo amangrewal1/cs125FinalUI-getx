@@ -13,4 +13,11 @@ class AddHydrationController extends GetxController {
     addHydrationModelObj.value.waterIntakeController.dispose();
     super.onClose();
   }
+
+  var waterIntake = ''.obs;
+
+  void addHydration(value) {
+    waterIntake.value = value;
+  }
+
 }

@@ -181,6 +181,7 @@ Future<int> fetchStepCount() async {
 
     // Prepare input data for prediction
     int gender = (userData['gender'] == 'Male') ? 0 : 1;
+    print("giraffe " + userData['dob']);
     int age = LocalDateTime.dateTime(DateTime.parse(userData['dob'])).periodSince(LocalDateTime.now()).years;
     final inputData = [gender, age, 8, 50, 3, 70, 7000, 1, 0, 0, 1, 0];
     //activity level varies - get from datastream of android Health app?
@@ -331,14 +332,56 @@ Future<int> fetchStepCount() async {
     return score;
   }
 
+  Future<double> calcHydrationScore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> userData = {};
+    String? userDataString = prefs.getString('userData');
+    if (userDataString != null) {
+      userData = json.decode(userDataString);
+    }
+    Map<String, dynamic> hydrationData = {};
+    String? hydrationDataString = prefs.getString('hydration');
+    if (hydrationDataString != null) {
+      hydrationData = json.decode(hydrationDataString);
+    }
+    else {
+      return 250;
+    }
+    DateTime firstLogin = userData['firstLogin'] != null ? DateTime.parse(userData['firstLogin']) : DateTime.now();
+    DateTime currentDate = DateTime.now();
+    double score = 0;
+    double totalHydration = 0;
+    int validDaysCount = 0;
+    
+    // Iterate over the past 5 dates (including today)
+    for (int i = 0; i < 5; i++) {
+      DateTime dateToCheck = currentDate.subtract(Duration(days: i));
+      // Check if the date is later than firstLogin
+      if (dateToCheck.isAfter(firstLogin)) {
+        String formattedDate = DateFormat('yyyy-MM-dd').format(dateToCheck);
+        if (hydrationData.containsKey(formattedDate)) {
+          for (int j = 0; j < hydrationData[formattedDate].length; j++) {
+            totalHydration += hydrationData[formattedDate][j][1];
+          }
+          validDaysCount++;
+          
+        }
+      }
+    }
+    score = totalHydration / (validDaysCount * 100);
+    return score >= 1 ? 250 : score * 250;
+  }
+
   Future<int> calcLifeScore() async {
     double sleep = await calcSleepScore();
+    sleep = 0.8 * sleep;
     double stress = await calcStressScore();
-    double hydration = 250; //replace with calcHydrationScore(); later
+    double hydration = await calcHydrationScore(); //replace with calcHydrationScore(); later
+    double activity = 82;
     int steps = await fetchStepCount();
     print("number of steps: " + steps.toString());
-    print("sleep score: " + sleep.toString() + " stress score: " + stress.toString());
-    return (sleep + stress + hydration).round();
+    print("sleep score: " + sleep.toString() + " stress score: " + stress.toString() + " hydration score: " + hydration.toString());
+    return (sleep + stress + hydration + activity).round();
   }
 
   Future<void> printSharedPreferencesContents() async { //debugging
@@ -566,9 +609,13 @@ void _showPopup(BuildContext context) async {
   int lifeScore = await calcLifeScore();
   double sleepScore = await calcSleepScore();
   double stressScore = await calcStressScore();
+  double hydrationScore = await calcHydrationScore();
+  double activityScore = 250;
   String scoreText = "Your lifestyle score is $lifeScore out of 1000 points.\n";
   String sleepText = "";
   String stressText = "";
+  String hydrationText = "";
+  String activityText = "";
 
   if (sleepScore >= 450) {
     sleepText = "Your sleep the past week has been phenomenal, and your body is extremely well-rested. Keep up the consistency!\n";
@@ -584,13 +631,33 @@ void _showPopup(BuildContext context) async {
   }
 
   if (stressScore >= 200) {
-    stressText = "As for your mental health, great job keeping stress to a minimum!";
+    stressText = "As for your mental health, great job keeping stress to a minimum!\n";
   }
   else if (stressScore >= 100) {
-    stressText = "As for your mental health, this week wasn't exactly the best for you. Remember to follow the meditation recommendations before going to bed!";
+    stressText = "As for your mental health, this week wasn't exactly the best for you. Remember to follow the meditation recommendations before going to bed!\n";
   }
   else {
-    stressText = "Unfortunately, this has not been your week. Still, your mental health is important! Focus on employing the meditation recommendations every evening.";
+    stressText = "Unfortunately, this has not been your week. Still, your mental health is important! Focus on employing the meditation recommendations every evening.\n";
+  }
+
+  if (hydrationScore >= 200) {
+    hydrationText = "Great job staying hydrated, hydrohomie! Water is the best, isn't it?\n";
+  }
+  else if (hydrationScore >= 100) {
+    hydrationText = "Although you've been drinking water habitually, you're still not at the recommended hydration levels. Try to drink at least 10-12 cups per day!\n";
+  }
+  else {
+    hydrationText = "You need to drink much more water per day. As a result, your life score has been substantialy decreased. Remember, 10-12 cups a day is the goal!\n";
+  }
+
+  if (activityScore >= 200) {
+    activityText = "Lastly, you've been doing a great job getting in your steps this week. Keep up the grind.\n";
+  }
+  else if (activityScore >= 100) {
+    activityText = "You've been moderately active this week, with decent step counts on average. There's still room for improvement, however. More steps. MORE!\n";
+  }
+  else {
+    activityText = "Get out of bed, you potato. You've barely been getting any steps, and that needs to change now!\n";
   }
 
   showDialog(
@@ -602,7 +669,7 @@ void _showPopup(BuildContext context) async {
         content: Container(
           width: double.maxFinite,
           child: ListView.builder(
-            itemCount: 3, // Number of Text widgets
+            itemCount: 5, // Number of Text widgets
             itemBuilder: (BuildContext context, int index) {
               if (index == 0) {
                 return Text(
@@ -616,9 +683,21 @@ void _showPopup(BuildContext context) async {
                   textAlign: TextAlign.center,
                 );
               }
-              else {
+              else if (index == 2) {
                 return Text(
                   stressText,
+                  textAlign: TextAlign.center,
+                );
+              }
+              else if (index == 3) {
+                return Text(
+                  hydrationText,
+                  textAlign: TextAlign.center,
+                );
+              }
+              else {
+                return Text(
+                  activityText,
                   textAlign: TextAlign.center,
                 );
               }
@@ -749,6 +828,7 @@ void _showPopup(BuildContext context) async {
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       // If an error occurs, display an error message
+                      print("wedgie " + snapshot.error.toString());
                       return Text("Error: ${snapshot.error}");
                     } else {
                       // When the result is available, use it to dynamically display sleep hours and minutes

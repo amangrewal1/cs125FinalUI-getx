@@ -12,7 +12,7 @@ class SplashPageScreen extends StatefulWidget {
 class _SplashPageScreenState extends State<SplashPageScreen> {
   @override
   void initState() {
-    //clearSharedPreferences();     // UNCOMMENT TO CLEAR DATA IN SHARED PREFERENCES
+    clearSharedPreferences();    // UNCOMMENT TO CLEAR LOCAL DATA
     super.initState();
     Future.delayed(Duration(seconds: 1), () {
       navigateToNextScreen();
@@ -49,7 +49,7 @@ class _SplashPageScreenState extends State<SplashPageScreen> {
             children: [
               SizedBox(height: 4.v),
               Align(
-                alignment: Alignment.centerRight,
+                alignment: Alignment.center,
                 child: RichText(
                   text: TextSpan(
                     children: [
