@@ -302,7 +302,7 @@ class RegisterPageInfoScreen extends GetWidget<RegisterPageInfoController> {
   /// Navigates to the registerPageActivityScreen when the action is triggered.
   navigateToActivity() {
     Get.offNamed(
-      AppRoutes.registerPageActivityScreen,
+      AppRoutes.registerPageSleepGoalScreen,
     );
   }
 }
