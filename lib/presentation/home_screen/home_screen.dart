@@ -11,6 +11,10 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 //DateTime calculations
 import 'package:time_machine/time_machine.dart';
 import 'package:intl/intl.dart';
+//google fit health data
+import 'package:health/health.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
 
 // ignore_for_file: must_be_immutable
 class HomeScreen extends GetWidget<HomeController> {
@@ -18,6 +22,100 @@ class HomeScreen extends GetWidget<HomeController> {
       : super(
           key: key,
         );
+  
+  static final types = [HealthDataType.STEPS,];
+
+  Future<bool> authorize(HealthFactory health) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? permissionString = prefs.getString('permissions');
+    bool granted = false;
+    if (permissionString != null) {
+      granted = json.decode(permissionString);
+    }
+    // If we are trying to read Step Count, Workout, Sleep or other data that requires
+    // the ACTIVITY_RECOGNITION permission, we need to request the permission first.
+    // This requires a special request authorization call.
+    //
+    // The location permission is requested for Workouts using the Distance information.
+    if (granted == true) {
+      print("Fick");
+    }
+    if (granted || await Permission.activityRecognition.request().isGranted) {
+      await prefs.setString('permissions', json.encode(true));
+       // Check if we have health permissions
+      /*bool? hasPermissions = await health.hasPermissions([HealthDataType.STEPS,], permissions: [HealthDataAccess.READ,]);
+
+      // hasPermissions = false because the hasPermission cannot disclose if WRITE access exists.
+      // Hence, we have to request with WRITE as well.
+      hasPermissions = false;
+      
+      bool authorized = false;
+      if (!hasPermissions) {
+        // requesting access to the data types before reading them
+        try {
+          authorized =
+              await health.requestAuthorization(types, permissions: [HealthDataAccess.READ,]);
+              return true;
+        } catch (error) {
+          print("Exception in authorize: $error");
+        }
+      }*/
+      return false;
+    }
+
+    return false;
+  }
+
+Future<int> fetchStepCount() async {
+  HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
+  final permissionStatus = await Permission.activityRecognition.request();  
+  if (await permissionStatus.isDenied ||
+      await permissionStatus.isPermanentlyDenied) {
+        print("wth");
+  }
+  else if (await permissionStatus.isGranted) {
+    print("yip yip");
+  }
+  /*bool authorized = await authorize(health);
+  if (authorized == false) {
+    return -1;
+  }*/
+  DateTime now = DateTime.now();
+  DateTime startDate = now.subtract(Duration(days: 7));
+  //DateTime endDate = now;
+  int? steps;
+
+  // Request permission to access Google Fit data
+  //List<HealthDataType> types = [HealthDataType.STEPS];
+  final permissions = [HealthDataAccess.READ];
+  bool stepsPermission = await health.hasPermissions([HealthDataType.STEPS], permissions: permissions) ?? false;
+  if (!stepsPermission) {
+    //bool wow = await health.requestAuthorization(types, permissions: permissions);
+    //stepsPermission = await health.requestAuthorization([HealthDataType.STEPS]);
+    //print("aw man " + wow.toString());
+  }
+
+  if (stepsPermission) {
+    // Retrieve step count data
+    try {
+        steps = await health.getTotalStepsInInterval(startDate, now);
+      } catch (error) {
+        print("Caught exception in getTotalStepsInInterval: $error");
+      }
+
+      print('Total number of steps: $steps');
+
+    //List<HealthDataPoint> dataPoints = await health.getHealthDataFromTypes(startDate, endDate, types);
+
+    return steps != null ? steps : 0;
+  } else {  
+    // Handle case where permission is not granted
+    print("Authorization not granted - error in authorization");
+    return -1;
+  }
+}
+
+
 
   Future<int> currStress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -237,7 +335,9 @@ class HomeScreen extends GetWidget<HomeController> {
     double sleep = await calcSleepScore();
     double stress = await calcStressScore();
     double hydration = 250; //replace with calcHydrationScore(); later
-    print("bro " + sleep.toString() + " eek " + stress.toString());
+    int steps = await fetchStepCount();
+    print("number of steps: " + steps.toString());
+    print("sleep score: " + sleep.toString() + " stress score: " + stress.toString());
     return (sleep + stress + hydration).round();
   }
 

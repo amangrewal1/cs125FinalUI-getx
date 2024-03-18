@@ -16,6 +16,8 @@ dependencies:
   tflite_flutter: ^0.10.4
   time_machine: ^0.9.17
   health: ^9.0.1
+  permission_handler: ^11.3.0
+  flutter_activity_recognition: ^3.0.0
 dev_dependencies: 
   flutter_test: 
     sdk: flutter
